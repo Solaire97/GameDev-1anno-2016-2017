@@ -14,19 +14,16 @@ class PantherII
 	int carburante;
 	int munizioni;
 	public:
-	bool operativo;
 	PantherII()
 	{
 		vita=100;
 		carburante=100;
 		munizioni=100;
-		operativo=true;
 	}
 	void Pattugliamento(int& punti)
 	{
-		srand(time(NULL));
-		controllo();
-		if(operativo==true)
+		
+		if(isOperativo())
 		{
 			int randp=(rand()%3)+2;
 			vita-=(randp*2);
@@ -44,17 +41,18 @@ class PantherII
 	}
 	void Attacco_Posizione_Nemica(int& punti)
 	{
-		controllo();
-		if(operativo==true)
+		
+		if(isOperativo())
 		{
 			int randa=(rand()%3)+2;
 			vita-=(randa*7);
 			carburante-=(randa*3);
 			munizioni-=(randa*7);
 			punti+=2;
+			
 			return;
 		}
-			else
+		else
 		{
 			return;
 		}
@@ -62,8 +60,8 @@ class PantherII
 	}
 	void Rifornimento_e_Riparazione(int& punti)
 	{
-		controllo();
-		if(operativo==true)
+		
+		if(isOperativo())
 		{
 			int randr=(rand()%3)+2;
 			vita+=(randr*5);
@@ -89,51 +87,26 @@ class PantherII
 		}
 		
 	}
-	private:
-	void controllo()
+	bool isOperativo()
 	{
-		if(vita==0)
-		{
-			operativo=false;
-			return;
-		}
-		else
-		{
-			if(carburante==0)
-			{
-				operativo=false;
-				return;
-			}
-			else
-			{
-				if(munizioni==0)
-				{
-					operativo=false;
-					return;
-				}
-			}
-		}
+		return (vita>0&&carburante>0&&munizioni>0);
 	}
 	public:
 	void stato_carro()
 	{
-		cout<<"\noperativo: "<<operativo<<endl;
+		cout<<"\noperativo: "<<isOperativo()<<endl;
 		cout<<"\nvita: "<<vita<<endl;
 		cout<<"\ncarburante: "<<carburante<<endl;
 		cout<<"\nmunizioni: "<<munizioni<<endl;
 		return;
 	}
-	bool isalive()
-	{
-		return (operativo);
-	}
 };
-
-bool conta_carri(PantherII team[5], int& carri)
+bool conta_carri(PantherII team[5])
 {
+	int carri=0;
 	for(int a=0; a<5; a++)
 	{
-		if(team[a].operativo==true)
+		if(team[a].isOperativo())
 		{
 			carri++;
 		}
@@ -141,16 +114,20 @@ bool conta_carri(PantherII team[5], int& carri)
 	}
 	if(carri==0)
 	{
+		return(true);
+	}
+	else
+	{
 		return(false);
 	}
 }
 
 int main()
 {
+	srand(static_cast<unsigned int>(time(NULL)));
 	PantherII team[5];
-	int carri=0;
 	int punti=0;
-	cout<<"Buonasera Comandante, i suoi carri PantherII sono operativi e pronti a procedere nella campagna di conquista delle Ardenne. \n Le regole sono semplici:\n1)Puo'' dare un solo ordine a tutti e 5 i carri.\n2)Deve arrivare a 100 punti vittoria così da vincere la campagna.\n3)Se rifornisce i suoi carri perde punti vittoria per inattività\n4)se perde tutti i carri la campagna fallisce.\n"<<endl;
+	cout<<"Buonasera Comandante, i suoi carri PantherII sono operativi e pronti a procedere nella campagna di conquista delle Ardenne. \n Le regole sono semplici:\n1)Puo' dare un solo ordine a tutti e 5 i carri.\n2)Deve arrivare a 100 punti vittoria cosi' da vincere la campagna.\n3)Se rifornisce i suoi carri perde punti vittoria per inattivita'\n4)se perde tutti i carri la campagna fallisce.\n"<<endl;
 	cout<<"Questi sono i vostri carri: "<<endl;
 	for(int a=0; a<5; a++)
 	{
@@ -161,14 +138,14 @@ int main()
 	cout<<"Buona fortuna Comandante\n\n"<<endl;
 	system("pause");
 	int choice=0;
-	while(conta_carri(team, carri))
+	while(!conta_carri(team))
 	{
 		system("cls");
 		cout<<"Quali sono i suoi ordini Comandante?\n"<<endl;
 		cout<<"1)Pattugliamento"<<endl;
 		cout<<"2)Attacca la posizione nemica"<<endl;
 		cout<<"3)Rifornimento e riparazione\n"<<endl;
-		while(choice<1 || choice>4)
+		while(choice<1 || choice>3)
 		{
 			cin>>choice;
 		}
@@ -180,7 +157,7 @@ int main()
 					{
 						team[a].Pattugliamento(punti);
 					}
-					cout<<"il suo punteggio è "<<punti<<endl;
+					cout<<"il suo punteggio e' "<<punti<<endl;
 					cout<<"Lo stato dei suo carri Comandante:"<<endl;
 					for(int a=0; a<5; a++)
 					{
@@ -188,13 +165,15 @@ int main()
 						team[a].stato_carro();
 						cout<<"-------------------------------------------------------------------------------"<<endl;
 					}
+					system("pause");
+					choice=0;
 					break;
 			case 2:
 					for(int a=0; a<5; a++)
 					{
 						team[a].Attacco_Posizione_Nemica(punti);
 					}
-					cout<<"il suo punteggio è "<<punti<<endl;
+					cout<<"il suo punteggio e' "<<punti<<endl;
 					cout<<"Lo stato dei suo carri Comandante:"<<endl;
 					for(int a=0; a<5; a++)
 					{
@@ -202,6 +181,8 @@ int main()
 						team[a].stato_carro();
 						cout<<"-------------------------------------------------------------------------------"<<endl;
 					}
+					system("pause");
+					choice=0;
 					break;
 			case 3: 
 					for(int a=0; a<5; a++)
@@ -209,7 +190,7 @@ int main()
 						team[a].Rifornimento_e_Riparazione(punti);
 					}
 					punti-=5;
-					cout<<"il suo punteggio è "<<punti<<endl;
+					cout<<"il suo punteggio e' "<<punti<<endl;
 					cout<<"Lo stato dei suo carri Comandante:"<<endl;
 					for(int a=0; a<5; a++)
 					{
@@ -217,14 +198,25 @@ int main()
 						team[a].stato_carro();
 						cout<<"-------------------------------------------------------------------------------"<<endl;
 					}
+					system("pause");
+					choice=0;
 					break;
 		}
 		if(punti>=100)
 		{
-		cout<<"Complimenti Comandante ha vinto la campagna con un punteggio di "<<punti;
-		system(pause)
+			system("cls");
+			cout<<"Complimenti Comandante ha vinto la campagna con un punteggio di "<<punti<<endl;
+			system("pause");
+			break;
+		}
+		if(conta_carri(team))
+		{
+		system("cls");
+		cout<<"Comandante e' riuscito a distruggere tutti i nostri carri, puo' lasciare le sue dimissioni sulla mia scrivania"<<endl;
+		system("pause");
 		break;
 		}
 	}
+	
 	
 }
